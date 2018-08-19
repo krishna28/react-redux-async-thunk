@@ -1,5 +1,35 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+
 import './App.css';
+
+const actions = {
+  ADD:"ADD",
+  REMOVE:"REMOVE"
+}
+
+
+let addMessage = (username,message,dispatch) => {
+
+    dispatch({
+      type:actions.ADD,
+      payload: {
+        message:message,
+        username:username,
+        id:Date.now()
+      }
+     })
+}
+
+
+let removeMessage = (id,dispatch) => {
+  dispatch({
+    type:actions.REMOVE,
+    payload:id
+  })
+}
+
 
 class App extends Component {
 
@@ -7,8 +37,7 @@ class App extends Component {
     super(props);
     this.state = {
       username:"",
-      message:"",
-      messageList: []
+      message:""
     }
   }
 
@@ -32,26 +61,13 @@ class App extends Component {
     })
   }
 
-
-  remove = (id) => {
-    const updatedList = this.state.messageList.filter((message) => message.id !== id);
-    this.setState(() => {
-      return {
-        messageList: updatedList
-      }
-    })
-  }
-
   
   onSubmit = (event) => {
     event.preventDefault();
     let message = this.state.message;
     let username = this.state.username;
-    this.setState((prevState) =>{
-      return {
-        messageList: prevState.messageList.concat({message:message,username:username,id:Date.now()})
-      }
-    })
+    this.props.add(message,username);
+
   }
 
   render() {
@@ -76,11 +92,11 @@ class App extends Component {
            value="Post" />
         </form>
         <div>
-          {this.state.messageList.map((message) => {
+          {this.props.messages.map((message) => {
             return <div style={{display:'inline-block',
             padding:'20px',cursor:'pointer', margin:'0 20px 20px 0',
              border:'1px solid black', width:'200px'}} key={message.id}
-              onClick={() => this.remove(message.id)}>
+              onClick={() => this.props.remove(message.id)}>
               <p>Username: {message.username}</p>
               <p>Message: {message.message}</p>
             </div>
@@ -91,4 +107,17 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    messages: state.messageList
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+return {
+ add : (username,message) => addMessage(username,message,dispatch),
+ remove: (id) => removeMessage(id,dispatch) 
+}
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(App);
