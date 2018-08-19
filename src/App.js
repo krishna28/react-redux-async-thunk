@@ -10,63 +10,27 @@ const actions = {
 }
 
 
-let addMessage = (username,message,dispatch) => {
- setTimeout(() => {
-    dispatch({
-      type:actions.ADD,
-      payload: {
-        message:message,
-        username:username,
-        id:Date.now()
-      }
-     })
-  },2000)
+let addMessage = (username,message) => {
+  return dispatch => {
+    setTimeout(() => dispatch({
+        type:actions.ADD,
+        payload: {
+          message:message,
+          username:username,
+          id:Date.now()
+        }
+       }),2000)
+    }
 }
 
-
-// let addMessage = (username,message) => {
-
-
-//   let payload = setTimeout(() => ({
-//       message:message,
-//       username:username,
-//       id:Date.now()
-//     })
-//   ,2000)
-
-//   return {
-//     type:actions.ADD,
-//     payload: payload
-//    }
-
-//   }
-
-
-// let addMessage = (username,message) => {
-
-
-//   let payload = setTimeout(() => ({
-//       message:message,
-//       username:username,
-//       id:Date.now()
-//     })
-//   ,2000)
-
-//   return (dispatch) => ({
-//     type:actions.ADD,
-//     payload: payload
-//    })
-//   }
-
-
-let removeMessage = (id,dispatch) => {
- setTimeout(() => {
-// const updatedMessage = messages.filter(item => item.id != id);
-  dispatch({
-    type:actions.REMOVE,
-    payload:id
-  })
- },2000)
+let removeMessage = (id) => {
+  return dispatch => {
+    setTimeout(() => dispatch({
+            type:actions.REMOVE,
+            payload:id
+        })
+    ,2000)
+  }
 }
 
 class App extends Component {
@@ -153,10 +117,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 return {
- add : (username,message) => addMessage(username,message,dispatch),
- remove: (id,message) => removeMessage(id,dispatch) 
+ add : (username,message) => dispatch(addMessage(username,message)),
+ remove: (id) => dispatch(removeMessage(id)) 
 }
 }
-
 
 export default connect(mapStateToProps,mapDispatchToProps)(App);
